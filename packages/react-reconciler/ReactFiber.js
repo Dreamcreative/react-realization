@@ -1,4 +1,4 @@
-import {NoEffect} from 'shared/ReactSideEffectTags';
+import { NoEffect } from 'shared/ReactSideEffectTags';
 import { NoWork } from './ReactFiberExpirationTime';
 import {
   IndeterminateComponent,
@@ -59,6 +59,8 @@ export class FiberNode {
 export function createWorkInProgress(current, pendingProps) {
   let workInProgress = current.alternate;
   if (!workInProgress) {
+    // 如果workInProgress不存在
+    // 创建一个新的fiber
     workInProgress = new FiberNode(
       current.tag,
       pendingProps,
@@ -70,6 +72,7 @@ export function createWorkInProgress(current, pendingProps) {
     current.alternate = workInProgress;
     workInProgress.alternate = current;
   } else {
+    // 如果workInProgress存在，设置属性
     workInProgress.pendingProps = pendingProps;
 
     // 已有alternate的情况重置effect

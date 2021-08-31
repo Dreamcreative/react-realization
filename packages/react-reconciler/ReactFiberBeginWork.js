@@ -23,9 +23,15 @@ function renderWithHooks(current, workInProgress, Component, props) {
 function reconcileChildren(current, workInProgress, nextChildren) {
   // 首次渲染时只有root节点存在current，所以只有root会进入reconcile产生effectTag
   // 其他节点会appendAllChildren形成DOM树
+
   if (current) {
+    // current存在 表示当前为更新
+    // 为节点创建fiber节点，同时打上 effect标记
     workInProgress.child = reconcileChildFibers(workInProgress, current.child, nextChildren);
   } else {
+    // current 不存在 表示当前为 挂载
+    // 为节点创建fiber节点 同时给 根节点打上 effect标记
+    // 其余子节点不需要 打effect标记
     workInProgress.child = mountChildFibers(workInProgress, null, nextChildren);
   }
 }
@@ -98,17 +104,23 @@ function updateHostComponent(current, workInProgress) {
 
 // render阶段开始处理fiber的入口
 // 总体来说该函数会计算新state，返回child
+/**
+ * 
+ * @param {*} current 已渲染的fiber节点
+ * @param {*} workInProgress 更新的fiber节点
+ * @returns 
+ */
 export default function beginWork(current, workInProgress) {
-  console.log('beginWork', workInProgress, workInProgress.type);
+  // console.log('beginWork', workInProgress, workInProgress.type);
   if (current) {
     const oldProps = current.memoizedProps;
     const newProps = workInProgress.pendingProps;
-
+    // 如果 当前页面的 fiber节点的 props不等于 当前需要更新的fiber节点，表示 需要更新
     if (oldProps !== newProps) {
       didReceiveUpdate = true;
     }
   }
-
+  // 根据 当前正在工作的fiber节点的 tag,执行不同的 更新行为
   switch (workInProgress.tag) {
     case HostRoot:
       return updateHostRoot(current, workInProgress);
